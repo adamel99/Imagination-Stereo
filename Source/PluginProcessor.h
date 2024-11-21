@@ -63,7 +63,6 @@ public:
     juce::AudioParameterFloat* getInputGainParam()       const { return inputGain; }
     juce::AudioParameterFloat* getOutputGainParam()      const { return outputGain; }
     juce::AudioParameterFloat* getMidSideParam()         const { return midSide; }
-//    juce::AudioParameterFloat* getDepthParam()           const { return depth; }
     juce::AudioParameterFloat* getCrossfeedParam()       const { return crossfeed; }
     juce::AudioParameterFloat* getExciterEnhancerParam() const { return exciterEnhancer; }
     juce::AudioParameterFloat* getStereoSpreadParam()    const { return stereoSpread; }
@@ -75,7 +74,6 @@ private:
     juce::AudioParameterFloat* inputGain       = nullptr;
     juce::AudioParameterFloat* outputGain      = nullptr;
     juce::AudioParameterFloat* midSide         = nullptr;
-//    juce::AudioParameterFloat* depth           = nullptr;
     juce::AudioParameterFloat* stereoSpread    = nullptr;
     juce::AudioParameterFloat* crossfeed       = nullptr;
     juce::AudioParameterFloat* exciterEnhancer = nullptr;

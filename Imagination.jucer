@@ -44,33 +44,7 @@
             resource="0" file="../../../Downloads/CustomLookAndFeelVerticalSlider.cpp"/>
       <FILE id="vHVnUm" name="CustomLookAndFeelVerticalSlider.h" compile="0"
             resource="0" file="../../../Downloads/CustomLookAndFeelVerticalSlider.h"/>
-      <FILE id="rthbTY" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
-      <FILE id="TPL4Gq" name="MainComponent.cpp" compile="1" resource="0"
-            file="Source/MainComponent.cpp"/>
-      <FILE id="lF1w1y" name="SphereVertexShader.metal" compile="0" resource="1"
-            file="Builds/MacOSX/SphereVertexShader.metal"/>
-      <FILE id="nAF3kh" name="SphereFragmentShader.metal" compile="0" resource="1"
-            file="Builds/MacOSX/SphereFragmentShader.metal"/>
-      <FILE id="l3fuB8" name="ShaderUtils.h" compile="0" resource="0" file="Source/ShaderUtils.h"/>
     </GROUP>
-    <FILE id="qQBsUk" name="02d0c66f1fd9b037093d88f83242f536.jpg" compile="0"
-          resource="1" file="../../../Downloads/02d0c66f1fd9b037093d88f83242f536.jpg"/>
-    <FILE id="mYGofQ" name="4f057d5d71e62a9b9f61e2c23e001b53.jpg" compile="0"
-          resource="1" file="../../4f057d5d71e62a9b9f61e2c23e001b53.jpg"/>
-    <FILE id="oSacud" name="61cd880aa22f7660e409b3ad8c7c3a63.jpg" compile="0"
-          resource="1" file="../../../Downloads/61cd880aa22f7660e409b3ad8c7c3a63.jpg"/>
-    <FILE id="ReVtmE" name="79ab04ae66154a34c2518a69bf6c6a23.jpg" compile="0"
-          resource="1" file="../../../Downloads/79ab04ae66154a34c2518a69bf6c6a23.jpg"/>
-    <FILE id="m7aiYD" name="a7a095852bde7423cd519be7185d13e3.jpg" compile="0"
-          resource="1" file="../../../Downloads/a7a095852bde7423cd519be7185d13e3.jpg"/>
-    <FILE id="ylbepc" name="brushed-metal-radial-texture-vector-34790530.jpg"
-          compile="0" resource="1" file="../../../Downloads/brushed-metal-radial-texture-vector-34790530.jpg"/>
-    <FILE id="t6pr6u" name="fe36a0a008a9654494bd357bb1b564a3.jpg" compile="0"
-          resource="1" file="../../../Downloads/fe36a0a008a9654494bd357bb1b564a3.jpg"/>
-    <FILE id="rkkCnV" name="reflective-brushed-metal-foil-texture-free-thumb42.jpg.png"
-          compile="0" resource="1" file="../../../Downloads/reflective-brushed-metal-foil-texture-free-thumb42.jpg.png"/>
-    <FILE id="JTtAhH" name="Screenshot 2024-07-02 at 3.01.30&#8239;PM.png"
-          compile="0" resource="1" file="../../Screenshot 2024-07-02 at 3.01.30&#8239;PM.png"/>
   </MAINGROUP>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

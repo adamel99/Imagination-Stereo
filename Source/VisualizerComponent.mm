@@ -13,7 +13,7 @@
 
 //==============================================================================
 VisualizerComponent::VisualizerComponent()
-: maxHistorySize(10)
+: maxHistorySize(5)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
@@ -116,51 +116,38 @@ void VisualizerComponent::drawGrid(juce::Graphics& g)
 void VisualizerComponent::drawStereoImage(juce::Graphics& g)
 {
     auto bounds = getLocalBounds().toFloat();
-       auto center = bounds.getCentre();
-       float maxRadius = juce::jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f - 40.0f;
+    auto center = bounds.getCentre();
+    float maxRadius = juce::jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f - 40.0f;
 
     juce::Path currentPath;
     const juce::ScopedLock sl(lock);
 
-       const int smoothingWindowSize = 20;  // Increase for smoother lines
-       std::vector<float> smoothedLeft(leftChannelData.size());
-       std::vector<float> smoothedRight(rightChannelData.size());
+    // Use a simple low-pass filter for smoothing instead of moving average
+    const float smoothingFactor = 0.05f;
+    std::vector<float> smoothedLeft(leftChannelData.size());
+    std::vector<float> smoothedRight(rightChannelData.size());
 
-       for (size_t i = 0; i < leftChannelData.size(); ++i)
-       {
-           float leftSum = 0.0f;
-           float rightSum = 0.0f;
-           int count = 0;
+    smoothedLeft[0] = leftChannelData[0];
+    smoothedRight[0] = rightChannelData[0];
 
-           for (int j = -smoothingWindowSize; j <= smoothingWindowSize; ++j)
-           {
-               int index = static_cast<int>(i) + j;
-               if (index >= 0 && index < static_cast<int>(leftChannelData.size()))
-               {
-                   leftSum += leftChannelData[index];
-                   rightSum += rightChannelData[index];
-                   ++count;
-               }
-           }
+    for (size_t i = 1; i < leftChannelData.size(); ++i)
+    {
+        smoothedLeft[i] = smoothedLeft[i - 1] + smoothingFactor * (leftChannelData[i] - smoothedLeft[i - 1]);
+        smoothedRight[i] = smoothedRight[i - 1] + smoothingFactor * (rightChannelData[i] - smoothedRight[i - 1]);
+    }
 
-           smoothedLeft[i] = leftSum / count;
-           smoothedRight[i] = rightSum / count;
-       }
-
-    for (size_t i = 0; i < smoothedLeft.size() && i < smoothedRight.size(); i += 2) // Skip every other sample for optimization
+    // Use Bezier curves for smoother paths
+    for (size_t i = 0; i < smoothedLeft.size() && i < smoothedRight.size(); i += 4)
     {
         float left = smoothedLeft[i];
         float right = smoothedRight[i];
 
-        // Calculate stereo width and amplitude
         float stereoWidth = left - right;
         float amplitude = (left + right) * 0.5f;
 
-        // Map stereo width to horizontal displacement and amplitude to vertical displacement
         float x = juce::jmap(stereoWidth, -1.0f, 1.0f, -maxRadius, maxRadius);
         float y = juce::jmap(amplitude, -1.0f, 1.0f, maxRadius, -maxRadius);
 
-        // Clamp the coordinates to stay within the sphere's radius
         float distance = std::sqrt(x * x + y * y);
         if (distance > maxRadius)
         {
@@ -169,59 +156,32 @@ void VisualizerComponent::drawStereoImage(juce::Graphics& g)
             y *= scale;
         }
 
-        // Starting from the center
         x += center.x;
         y += center.y;
 
         if (i == 0)
             currentPath.startNewSubPath(x, y);
         else
-            currentPath.lineTo(x, y);
+        {
+            auto lastPoint = currentPath.getCurrentPosition();
+            auto controlPoint = juce::Point<float>((lastPoint.getX() + x) / 2, (lastPoint.getY() + y) / 2);
+            currentPath.quadraticTo(controlPoint, { x, y });
+        }
     }
 
+    // Path stroke and glow
     pathHistory.push_back(currentPath);
     if (pathHistory.size() > maxHistorySize)
-    pathHistory.pop_front(); // Limit history to avoid excessive memory usage
+        pathHistory.pop_front();
 
-    // Enable anti-aliasing
-    g.setImageResamplingQuality(juce::Graphics::ResamplingQuality::highResamplingQuality);
-
-    // Draw the main path with gradient color from pink to deep red
-       juce::ColourGradient pathGradient(juce::Colours::pink.withAlpha(0.8f), center,
-                                         juce::Colours::red.withAlpha(0.8f), center.withX(center.x + maxRadius), true);
-       g.setGradientFill(pathGradient);
-       g.strokePath(currentPath, juce::PathStrokeType(2.0f));
-
-       // Optimize glow effect by reducing the number of layers or simplifying the gradient
-       int glowLayers = 3;  // Reduced layers for performance
-       float alphaStep = 0.1f / static_cast<float>(glowLayers);
-
-       for (int j = 0; j < glowLayers; ++j)
-       {
-           float alphaMultiplier = 0.1f * (glowLayers - j);
-           for (size_t i = 0; i < pathHistory.size(); ++i)
-           {
-               juce::ColourGradient glowGradient(juce::Colours::pink.withAlpha(alphaMultiplier * static_cast<float>(i + 1) * alphaStep), center,
-                                                 juce::Colours::red.withAlpha(alphaMultiplier * static_cast<float>(i + 1) * alphaStep), center.withX(center.x + maxRadius), true);
-               g.setGradientFill(glowGradient);
-               g.strokePath(pathHistory[i], juce::PathStrokeType(3.0f + j * 0.5f));
-           }
-       }
-       
-       // Simplify highlights and shading for better performance
-       g.setGradientFill(juce::ColourGradient(juce::Colours::white.withAlpha(0.3f), center.withX(center.x + maxRadius * 0.5f),
-                                              juce::Colours::transparentWhite, center.withY(center.y + maxRadius * 0.5f), true));
-       g.strokePath(currentPath, juce::PathStrokeType(1.0f));
-
-    // Add subtle highlights on the path for a more polished look
-    g.setGradientFill(juce::ColourGradient(juce::Colours::white.withAlpha(0.4f), center.withX(center.x + maxRadius * 0.5f),
-                                           juce::Colours::transparentWhite, center.withY(center.y + maxRadius * 0.5f), true));
-    g.strokePath(currentPath, juce::PathStrokeType(1.0f));
-
-    // Add shading to create depth effect
-    g.setGradientFill(juce::ColourGradient(juce::Colours::black.withAlpha(0.5f), center,
-                                           juce::Colours::transparentBlack, center.withY(center.y + maxRadius), true));
-    g.fillPath(currentPath);
+    // Dynamic stroke based on amplitude
+    for (size_t i = 0; i < pathHistory.size(); ++i)
+    {
+        juce::ColourGradient pathGradient(juce::Colours::blue.withAlpha(0.8f), center,
+                                          juce::Colours::cyan.withAlpha(0.8f), center.withX(center.x + maxRadius), true);
+        g.setGradientFill(pathGradient);
+        g.strokePath(pathHistory[i], juce::PathStrokeType(2.0f + i * 0.5f));
+    }
 }
 
 void VisualizerComponent::drawLabels(juce::Graphics& g)

@@ -36,7 +36,6 @@ apvts(*this, nullptr, "Parameters", createParameterLayout())
     storeFloatParam(inputGain, ParamIDs::inputGain);
     storeFloatParam(outputGain, ParamIDs::outputGain);
     storeFloatParam(midSide, ParamIDs::midSide);
-//    storeFloatParam(depth, ParamIDs::depth);
     storeFloatParam(crossfeed, ParamIDs::crossfeed);
     storeFloatParam(stereoSpread, ParamIDs::stereoSpread);
     storeFloatParam(exciterEnhancer, ParamIDs::exciterEnhancer);

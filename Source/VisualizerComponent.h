@@ -13,7 +13,6 @@
 #include <JuceHeader.h>
 #include <vector>
 #include <deque>
-#include <OpenGl/gl.h>
 
 
 
